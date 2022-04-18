@@ -6,13 +6,15 @@ import java.util.List;
 
 public interface LinkService {
 
-    public void create (Link link);
+    void create (Link link);
 
-    public Link read (String id);
+    Link read (int id);
 
-    public List<Link> readAll ();
+    List<Link> readAll ();
 
-    public boolean update (Link link, String id);
+    boolean update (int id, String newName, String newUrl);
 
-    public boolean delete (String id);
+    boolean delete (int id);
+
+    String redirect(String name);
 }

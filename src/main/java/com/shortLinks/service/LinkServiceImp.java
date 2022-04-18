@@ -1,45 +1,50 @@
 package com.shortLinks.service;
 
+import com.shortLinks.DAO.LinkDAO;
+import com.shortLinks.DAO.MyDataSource;
 import com.shortLinks.model.Link;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
-public class LinkServiceImp implements LinkService{
-
-    private static final Map<String, Link> LINK_MAP = new HashMap();
+public class LinkServiceImp implements LinkService {
 
     @Override
     public void create(Link link) {
-            LINK_MAP.put(link.getShortUrl(), link);
+        LinkDAO linkDAO = new LinkDAO(MyDataSource.getDataSource());
+
+        link.creatName();
+        while (linkDAO.isNameExistInDB(link.getName())){
+            link.creatName();
+        }
+        linkDAO.save(link);
     }
 
     @Override
-    public Link read(String shortLink) {
-        if (LINK_MAP.containsKey(shortLink)){
-            return LINK_MAP.get(shortLink);
-        } else return null;
+    public Link read(int id) {
+        return new LinkDAO(MyDataSource.getDataSource()).read(id);
     }
 
     @Override
     public List<Link> readAll() {
-        return new ArrayList<>(LINK_MAP.values());
+        return new LinkDAO(MyDataSource.getDataSource()).readAll();
     }
 
     @Override
-    public boolean update(Link link, String id) {
-        Link l = LINK_MAP.get(id);
-        l.setOldUrl(link.getOldUrl());
+    public boolean update(int id, String newName, String newUrl) {
 
-        return true;
+        return new LinkDAO(MyDataSource.getDataSource()).update(id, newName, newUrl);
     }
 
     @Override
-    public boolean delete(String shortLink) {
-        return LINK_MAP.remove(shortLink)!=null;
+    public boolean delete(int id) {
+        return new LinkDAO(MyDataSource.getDataSource()).delete(id);
     }
+
+    @Override
+    public String redirect(String name) {
+        return new LinkDAO(MyDataSource.getDataSource()).getUrl(name);
+    }
+
 }
